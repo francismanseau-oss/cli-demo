@@ -1,0 +1,113 @@
+/* cli-demo — catalogue */
+
+.site-main {
+    position: relative;
+    z-index: 1;
+    width: min(920px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: calc(var(--header-h) + 2.5rem) 0 4rem;
+}
+
+.demo-hero {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.demo-hero__eyebrow {
+    margin: 0 0 0.5rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.demo-hero h1 {
+    margin: 0 0 0.75rem;
+    font-size: clamp(1.75rem, 4vw, 2.4rem);
+    font-weight: 700;
+}
+
+.demo-hero__lead {
+    margin: 0 auto;
+    max-width: 36rem;
+    color: var(--lead-color);
+    line-height: 1.55;
+}
+
+.demo-grid {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.demo-empty {
+    padding: 2rem 1.5rem;
+    text-align: center;
+    color: var(--text-muted);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--glow-cyan);
+}
+
+.demo-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    padding: 1.25rem 1.4rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 0 24px rgba(139, 92, 246, 0.06);
+}
+
+.demo-card__meta {
+    flex: 1 1 14rem;
+    min-width: 0;
+}
+
+.demo-card__badge {
+    display: inline-block;
+    margin-bottom: 0.4rem;
+    padding: 0.15rem 0.65rem;
+    font-size: 0.75rem;
+    border-radius: 20px;
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+.demo-card__badge--web {
+    background: rgba(139, 92, 246, 0.12);
+    color: var(--accent-violet);
+}
+
+.demo-card h2 {
+    margin: 0 0 0.35rem;
+    font-size: 1.2rem;
+}
+
+.demo-card__desc {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.45;
+}
+
+.demo-card__updated {
+    margin: 0.4rem 0 0;
+    font-size: 0.8rem;
+    color: var(--text-muted-soft);
+}
+
+.site-footer {
+    position: relative;
+    z-index: 1;
+    padding: 1.25rem 1rem 2rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border);
+}

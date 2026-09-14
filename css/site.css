@@ -1,0 +1,72 @@
+/* cli-demo — base (adapté du portfolio, autonome) */
+
+:root {
+    --radius: 10px;
+    --btn-radius: 15px;
+    --header-h: 64px;
+    --font: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-deep) 55%, var(--bg-gradient-end) 100%);
+    color: var(--text);
+    font-family: var(--font);
+}
+
+.home-bg-deco {
+    opacity: 0.18;
+}
+
+.home-bg-side {
+    font-family: "Cascadia Code", "Consolas", "Courier New", monospace;
+    opacity: 1;
+}
+
+.home-bg-block--symbols {
+    opacity: 0.85;
+}
+
+.home-bg-edge,
+.home-bg-scatter {
+    font-family: "Cascadia Code", "Consolas", "Courier New", monospace;
+    opacity: 1;
+}
+
+.home-bg-sym {
+    color: #64748b;
+}
+
+.home-bg-deco .code-kw { color: #7dd3fc; }
+.home-bg-deco .code-str { color: #a5b4fc; }
+.home-bg-deco .code-var { color: #c4b5fd; }
+.home-bg-deco .code-log { color: #67e8f9; }
+.home-bg-deco .code-err { color: #f87171; }
+.home-bg-deco .code-warn { color: #fbbf24; }
+.home-bg-deco .code-ok { color: #4ade80; }
+.home-bg-deco .code-tag { color: #94a3b8; }
+.home-bg-deco .code-sym { color: #64748b; }
+
+img, video, svg {
+    max-width: 100%;
+    height: auto;
+}
+
+a {
+    color: inherit;
+}
+
+a:visited {
+    color: inherit;
+}
