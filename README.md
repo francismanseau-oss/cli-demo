@@ -14,5 +14,7 @@ https://francismanseau-oss.github.io/cli-demo/
 
 ## Notes
 
-- `noindex` / `robots.txt` Disallow — réduction d’indexation, pas une sécurité.
-- Dépôt indépendant du portfolio.
+- Anti-indexation : `robots.txt` (`Disallow: /`) + meta `noindex, nofollow, noarchive`.
+- Pas de sitemap. Les robots respectueux devraient s’abstenir d’indexer.
+- Ce n’est **pas** une protection : l’URL reste accessible à quiconque la connaît, y compris des bots non respectueux.
+- Site autonome (aucun lien depuis le site portfolio).
