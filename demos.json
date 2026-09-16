@@ -7,6 +7,14 @@
       "description": "Démo Android Vision — APK debug téléchargeable.",
       "file": "demos/apk/VisionDemo.apk",
       "updated": "2026-09-14"
+    },
+    {
+      "id": "AstroMeteoDemo",
+      "type": "apk",
+      "title": "AstroMeteo Demo",
+      "description": "Démo Android AstroMeteo — APK debug téléchargeable.",
+      "file": "demos/apk/AstroMeteo-demo.apk",
+      "updated": "2026-09-16"
     }
   ]
 }
