@@ -1,0 +1,27 @@
+name: Publish MGL Zen APK
+
+on:
+  push:
+    paths:
+      - .github/workflows/publish-mgl-zen.yml
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download validated APK artifact
+        run: |
+          curl -fL 'https://sdmntprnorthcentralus.oaiusercontent.com/files/00000000-cc40-822f-b55f-dac4bb64c6c5/raw?se=2026-09-17T07%3A09%3A27Z&sp=r&sv=2026-02-06&sr=b&scid=01a0ae27-fb03-78df-9efd-158fef59fbb5&skoid=bbd22fc4-f881-4ea4-b2f3-c12033cf6a8b&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-17T02%3A23%3A08Z&ske=2026-09-18T02%3A23%3A08Z&sks=b&skv=2026-02-06&sig=zGA1xOfM9cAGDZe5oBlnz748CiOslIv0EWT%2BjPEj4aw%3D' -o /tmp/mgl-zen.zip
+          unzip -p /tmp/mgl-zen.zip app-debug.apk > MGL-Zen-demo.apk
+          test -s MGL-Zen-demo.apk
+      - name: Publish direct APK
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add MGL-Zen-demo.apk
+          git commit -m "Update MGL Zen Android demo to 0.3.0"
+          git push
