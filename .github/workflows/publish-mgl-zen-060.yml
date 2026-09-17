@@ -1,0 +1,27 @@
+name: Publish MGL Zen 0.6.0
+
+on:
+  push:
+    paths:
+      - .github/workflows/publish-mgl-zen-060.yml
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download validated APK
+        run: |
+          curl -fL 'https://sdmntprnorthcentralus.oaiusercontent.com/files/00000000-0900-822f-b1bb-88f26262a646/raw?se=2026-09-17T14%3A48%3A05Z&sp=r&sv=2026-02-06&sr=b&scid=01a0afca-1f3e-7762-9ca3-31682f048664&skoid=bbd22fc4-f881-4ea4-b2f3-c12033cf6a8b&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-17T02%3A13%3A17Z&ske=2026-09-18T02%3A13%3A17Z&sks=b&skv=2026-02-06&sig=3P2Wodoi%2BkzPE5Gks6yI4R42j3SjkQAGMdFSqHlXe6M%3D' -o /tmp/mgl-zen.zip
+          unzip -p /tmp/mgl-zen.zip app-debug.apk > MGL-Zen-demo-v0.6.0.apk
+          test -s MGL-Zen-demo-v0.6.0.apk
+      - name: Publish demo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add MGL-Zen-demo-v0.6.0.apk
+          git commit -m "Publish MGL Zen 0.6.0 structure"
+          git push
