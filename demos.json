@@ -15,6 +15,14 @@
       "description": "Démo Android AstroMeteo — APK debug téléchargeable.",
       "file": "demos/apk/AstroMeteo-demo.apk",
       "updated": "2026-09-16"
+    },
+    {
+      "id": "MGLZenDemo",
+      "type": "apk",
+      "title": "MGL Zen",
+      "description": "Première expérience Android Baie sauvage — APK debug téléchargeable.",
+      "file": "MGL-Zen-demo.apk",
+      "updated": "2026-09-17"
     }
   ]
 }
