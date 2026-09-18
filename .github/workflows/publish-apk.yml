@@ -1,0 +1,244 @@
+﻿name: Publish APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: "App key from .github/apk-apps.json (e.g. MGL-Zen)"
+        required: true
+        type: string
+        default: "MGL-Zen"
+      version_label:
+        description: "Version shown in demos.json (e.g. v0.7.0 build 7)"
+        required: true
+        type: string
+
+concurrency:
+  group: publish-apk
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout cli-demo
+        uses: actions/checkout@v4
+
+      - name: Require artifact read token
+        env:
+          APK_ARTIFACT_READ_TOKEN: ${{ secrets.APK_ARTIFACT_READ_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${APK_ARTIFACT_READ_TOKEN:-}" ]; then
+            echo "::error::Secret APK_ARTIFACT_READ_TOKEN is missing on cli-demo"
+            exit 1
+          fi
+
+      - name: Resolve app from registry
+        id: app
+        env:
+          APP: ${{ inputs.app }}
+          VERSION_LABEL: ${{ inputs.version_label }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ -z "${APP:-}" ]; then
+            echo "::error::Missing app input"
+            exit 1
+          fi
+          if [ -z "${VERSION_LABEL:-}" ]; then
+            echo "::error::Missing version_label input"
+            exit 1
+          fi
+          if [ ! -f .github/apk-apps.json ]; then
+            echo "::error::Missing .github/apk-apps.json"
+            exit 1
+          fi
+          if ! jq -e --arg app "$APP" '.apps[$app]' .github/apk-apps.json >/dev/null; then
+            echo "::error::Unknown app '$APP' in .github/apk-apps.json"
+            exit 1
+          fi
+
+          REPO="$(jq -r --arg app "$APP" '.apps[$app].repo' .github/apk-apps.json)"
+          ARTIFACT="$(jq -r --arg app "$APP" '.apps[$app].artifact' .github/apk-apps.json)"
+          INNER_APK="$(jq -r --arg app "$APP" '.apps[$app].inner_apk' .github/apk-apps.json)"
+          OUTPUT="$(jq -r --arg app "$APP" '.apps[$app].output' .github/apk-apps.json)"
+          DEMOS_ID="$(jq -r --arg app "$APP" '.apps[$app].demos_id' .github/apk-apps.json)"
+          DESC_TEMPLATE="$(jq -r --arg app "$APP" '.apps[$app].description_template' .github/apk-apps.json)"
+
+          for required in REPO ARTIFACT INNER_APK OUTPUT DEMOS_ID DESC_TEMPLATE; do
+            eval "value=\${$required}"
+            if [ -z "$value" ] || [ "$value" = "null" ]; then
+              echo "::error::Registry field $required missing for app '$APP'"
+              exit 1
+            fi
+          done
+
+          DESCRIPTION="${DESC_TEMPLATE//\{version\}/$VERSION_LABEL}"
+
+          {
+            echo "repo=$REPO"
+            echo "artifact=$ARTIFACT"
+            echo "inner_apk=$INNER_APK"
+            echo "output=$OUTPUT"
+            echo "demos_id=$DEMOS_ID"
+            echo "description=$DESCRIPTION"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Resolved $APP -> $REPO / $ARTIFACT -> $OUTPUT"
+
+      - name: Find latest valid artifact
+        id: artifact
+        env:
+          GH_TOKEN: ${{ secrets.APK_ARTIFACT_READ_TOKEN }}
+          REPO: ${{ steps.app.outputs.repo }}
+          ARTIFACT_NAME: ${{ steps.app.outputs.artifact }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # GitHub returns artifacts most-recent-first.
+          ARTIFACT_ID="$(
+            gh api "repos/${REPO}/actions/artifacts?per_page=100" \
+              | jq -r --arg name "$ARTIFACT_NAME" \
+                '.artifacts[] | select(.name == $name and .expired == false) | .id' \
+              | head -n 1
+          )"
+
+          if [ -z "$ARTIFACT_ID" ]; then
+            echo "::error::No non-expired artifact named '$ARTIFACT_NAME' in $REPO"
+            exit 1
+          fi
+
+          META="$(gh api "repos/${REPO}/actions/artifacts/${ARTIFACT_ID}")"
+          META_NAME="$(printf '%s' "$META" | jq -r '.name')"
+          META_EXPIRED="$(printf '%s' "$META" | jq -r '.expired')"
+          META_SIZE="$(printf '%s' "$META" | jq -r '.size_in_bytes')"
+          META_RUN="$(printf '%s' "$META" | jq -r '.workflow_run.id')"
+
+          if [ "$META_EXPIRED" = "true" ]; then
+            echo "::error::Artifact $ARTIFACT_ID is expired"
+            exit 1
+          fi
+          if [ "$META_NAME" != "$ARTIFACT_NAME" ]; then
+            echo "::error::Artifact $ARTIFACT_ID name is '$META_NAME', expected '$ARTIFACT_NAME'"
+            exit 1
+          fi
+
+          echo "id=$ARTIFACT_ID" >> "$GITHUB_OUTPUT"
+          echo "run_id=$META_RUN" >> "$GITHUB_OUTPUT"
+          echo "Selected artifact id=$ARTIFACT_ID run=$META_RUN size=$META_SIZE"
+
+      - name: Download and extract APK
+        env:
+          GH_TOKEN: ${{ secrets.APK_ARTIFACT_READ_TOKEN }}
+          REPO: ${{ steps.app.outputs.repo }}
+          ARTIFACT_ID: ${{ steps.artifact.outputs.id }}
+          INNER_APK: ${{ steps.app.outputs.inner_apk }}
+          OUTPUT: ${{ steps.app.outputs.output }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          gh api "repos/${REPO}/actions/artifacts/${ARTIFACT_ID}/zip" > /tmp/apk-artifact.zip
+          test -s /tmp/apk-artifact.zip || {
+            echo "::error::Downloaded artifact zip is empty"
+            exit 1
+          }
+
+          # Reject API error JSON accidentally saved as the "zip".
+          if ! unzip -t /tmp/apk-artifact.zip >/dev/null; then
+            echo "::error::Downloaded file is not a valid zip (check token permissions / artifact id)"
+            head -c 400 /tmp/apk-artifact.zip || true
+            exit 1
+          fi
+
+          rm -rf /tmp/apk-extract
+          mkdir -p /tmp/apk-extract
+          unzip -q /tmp/apk-artifact.zip -d /tmp/apk-extract
+
+          if [ ! -f "/tmp/apk-extract/${INNER_APK}" ]; then
+            echo "::error::Expected '${INNER_APK}' inside artifact zip"
+            find /tmp/apk-extract -type f -print
+            exit 1
+          fi
+
+          mkdir -p "$(dirname "$OUTPUT")"
+          cp "/tmp/apk-extract/${INNER_APK}" "$OUTPUT"
+          test -s "$OUTPUT" || {
+            echo "::error::Stable APK is empty after copy: $OUTPUT"
+            exit 1
+          }
+
+          echo "APK ready at $OUTPUT ($(wc -c < "$OUTPUT") bytes)"
+
+      - name: Update demos.json entry only
+        env:
+          DEMOS_ID: ${{ steps.app.outputs.demos_id }}
+          OUTPUT: ${{ steps.app.outputs.output }}
+          DESCRIPTION: ${{ steps.app.outputs.description }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ ! -f demos.json ]; then
+            echo "::error::demos.json not found"
+            exit 1
+          fi
+
+          MATCH_COUNT="$(jq --arg id "$DEMOS_ID" '[.demos[] | select(.id == $id)] | length' demos.json)"
+          if [ "$MATCH_COUNT" != "1" ]; then
+            echo "::error::demos.json must contain exactly one entry id='$DEMOS_ID' (found $MATCH_COUNT)"
+            exit 1
+          fi
+
+          UPDATED="$(date -u +%Y-%m-%d)"
+          jq --arg id "$DEMOS_ID" \
+             --arg file "$OUTPUT" \
+             --arg desc "$DESCRIPTION" \
+             --arg updated "$UPDATED" \
+             '
+               .demos |= map(
+                 if .id == $id then
+                   .file = $file
+                   | .description = $desc
+                   | .updated = $updated
+                 else .
+                 end
+               )
+             ' demos.json > /tmp/demos.json.next
+
+          mv /tmp/demos.json.next demos.json
+
+          jq -e --arg id "$DEMOS_ID" --arg file "$OUTPUT" \
+            '.demos[] | select(.id == $id) | .file == $file' demos.json >/dev/null
+
+          echo "Updated demos.json id=$DEMOS_ID file=$OUTPUT"
+
+      - name: Commit and push
+        env:
+          APP: ${{ inputs.app }}
+          VERSION_LABEL: ${{ inputs.version_label }}
+          OUTPUT: ${{ steps.app.outputs.output }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -- "$OUTPUT" demos.json
+
+          if git diff --cached --quiet; then
+            echo "::error::Nothing changed after publish (APK + demos.json identical). Refusing empty success."
+            exit 1
+          fi
+
+          git commit -m "Publish ${APP} ${VERSION_LABEL}"
+          git push
+          echo "Published ${APP} ${VERSION_LABEL} -> ${OUTPUT}"

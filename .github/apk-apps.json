@@ -1,0 +1,12 @@
+{
+  "apps": {
+    "MGL-Zen": {
+      "repo": "francismanseau-oss/MGL-Zen",
+      "artifact": "MGL-Zen-debug",
+      "inner_apk": "app-debug.apk",
+      "output": "demos/apk/MGL-Zen-demo.apk",
+      "demos_id": "MGLZenDemo",
+      "description_template": "Minuterie flexible et Mixer compartimenté — APK debug {version}."
+    }
+  }
+}
