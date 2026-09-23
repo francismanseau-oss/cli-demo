@@ -32,10 +32,7 @@
                 var title = escapeHtml(demo.title || demo.id || "Démo");
                 var desc = escapeHtml(demo.description || "");
                 var updated = demo.updated ? escapeHtml(demo.updated) : "";
-                var href =
-                    type === "web"
-                        ? escapeHtml(demo.path || "#")
-                        : escapeHtml(demo.file || "#");
+                var href = escapeHtml(demo.file || demo.path || "#");
                 var cta = type === "web" ? "Ouvrir" : "Télécharger";
 
                 return (
