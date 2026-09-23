@@ -32,8 +32,13 @@
                 var title = escapeHtml(demo.title || demo.id || "Démo");
                 var desc = escapeHtml(demo.description || "");
                 var updated = demo.updated ? escapeHtml(demo.updated) : "";
-                var href = escapeHtml(demo.file || demo.path || "#");
+                var rawHref = demo.file || demo.path || "";
+                var href = escapeHtml(rawHref || "#");
                 var cta = type === "web" ? "Ouvrir" : "Télécharger";
+                var webAttrs =
+                    type === "web" && rawHref
+                        ? ' target="_blank" rel="noopener noreferrer"'
+                        : "";
 
                 return (
                     '<article class="demo-card">' +
@@ -52,6 +57,7 @@
                     '<a class="btn-primary" href="' +
                     href +
                     '"' +
+                    webAttrs +
                     (type === "apk" ? ' download' : "") +
                     ">" +
                     cta +
