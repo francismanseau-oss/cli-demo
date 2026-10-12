@@ -32,6 +32,15 @@
       "file": "autosuffisance/index.html",
       "path": "autosuffisance/index.html",
       "updated": "2026-09-21"
+    },
+    {
+      "id": "HeritageVivant",
+      "type": "web",
+      "title": "Héritage Vivant",
+      "description": "Projet d’autosuffisance — savoirs durables, outils et produits sélectionnés.",
+      "file": "heritage-vivant/index.html",
+      "path": "heritage-vivant/index.html",
+      "updated": "2026-10-12"
     }
   ]
 }
