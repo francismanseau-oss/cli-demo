@@ -1,11 +1,40 @@
 <!doctype html>
 <html lang="fr">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Héritage Vivant</title></head>
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#263b2a"><title>Héritage Vivant — Autonomie & savoir-faire</title>
+<style>
+:root{--ink:#253027;--forest:#263b2a;--moss:#64785c;--cream:#f5f0e4;--paper:#fffdf7;--gold:#b58a48;--line:#ded6c4}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.45}button,input{font:inherit}
+.wrap{width:min(100% - 28px,1050px);margin:auto}.top{background:var(--forest);color:white;padding:14px 0;position:sticky;top:0;z-index:5}.brand{font-family:Georgia,serif;font-size:1.28rem;font-weight:700}.brand small{display:block;font:500 .72rem system-ui;opacity:.8;letter-spacing:.08em;text-transform:uppercase}
+.hero{padding:44px 0 30px;background:linear-gradient(#263b2ae8,#263b2ae8),radial-gradient(circle at top right,#829173,transparent 50%);color:white}.hero h1{font:700 clamp(2.2rem,10vw,4.6rem)/.95 Georgia,serif;margin:0 0 14px}.hero p{font-size:1.08rem;max-width:620px;margin:0 0 22px;color:#f3efdf}.cta{display:inline-block;border:0;border-radius:12px;padding:14px 18px;background:var(--gold);color:#171d18;font-weight:800;text-decoration:none;min-height:48px}
+section{padding:30px 0}h2{font:700 1.7rem Georgia,serif;margin:0 0 8px}.lead{margin:0 0 20px;color:#5b645b}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:18px;min-height:135px;box-shadow:0 3px 12px #2530270b}.ico{font-size:1.8rem}.card h3{font:700 1.08rem Georgia,serif;margin:8px 0 5px}.card p{font-size:.88rem;margin:0;color:#626960}
+.tool{background:#e6e1d3;border-radius:18px;padding:20px;border:1px solid #d2c8b2}.tool label{display:block;font-weight:700;margin:12px 0 6px}.tool input{width:100%;padding:13px;border:1px solid #aaa48f;border-radius:10px;background:white;font-size:16px}.result{margin-top:14px;padding:14px;border-left:4px solid var(--gold);background:var(--paper);border-radius:8px}
+.feature{background:var(--forest);color:white}.feature .lead{color:#d8ddcf}.tags{display:flex;gap:8px;flex-wrap:wrap}.tag{padding:8px 10px;border:1px solid #87957f;border-radius:999px;font-size:.82rem}
+footer{padding:28px 0 90px;text-align:center;color:#687068;font-size:.82rem}.bottom{position:fixed;bottom:0;left:0;right:0;background:#fffdf7f5;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom));z-index:8}.bottom a{color:var(--ink);text-decoration:none;text-align:center;font-size:.72rem;min-width:64px}.bottom b{display:block;font-size:1.25rem}
+@media(min-width:720px){.grid{grid-template-columns:repeat(4,1fr)}.bottom{position:static;margin-top:20px}.hero{padding:70px 0}}
+</style></head>
 <body>
-  <main>
-    <h1>Héritage Vivant</h1>
-    <p>Autonomie, savoir-faire ancestral et produits durables.</p>
-    <p>Prototype en construction.</p>
-  </main>
-</body>
-</html>
+<header class="top"><div class="wrap"><div class="brand">Héritage Vivant<small>Les savoirs d'hier, l'autonomie d'aujourd'hui</small></div></div></header>
+<section class="hero"><div class="wrap"><h1>Reprendre<br>son autonomie.</h1><p>Des savoir-faire durables, des outils simples et des produits choisis pour cultiver, conserver, réparer et mieux vivre avec moins.</p><a class="cta" href="#outils">Commencer dans mon jardin</a></div></section>
+<main>
+<section><div class="wrap"><h2>Explorer les savoir-faire</h2><p class="lead">Tout ce qu'il faut, directement dans votre poche.</p><div class="grid">
+<article class="card"><div class="ico">🌱</div><h3>Jardin & semences</h3><p>Planifier, semer, récolter et ressemer.</p></article>
+<article class="card"><div class="ico">🥕</div><h3>Conservation</h3><p>Conserver les récoltes et réduire le gaspillage.</p></article>
+<article class="card"><div class="ico">💧</div><h3>Eau</h3><p>Récupération, stockage et usages responsables.</p></article>
+<article class="card"><div class="ico">🛠️</div><h3>Outils durables</h3><p>Choisir du matériel robuste, réparable et utile.</p></article>
+</div></div></section>
+<section id="outils"><div class="wrap"><h2>Mesurer dehors, calculer ici</h2><p class="lead">Pas de papier ni de crayon : entrez vos mesures sur place.</p><div class="tool">
+<h3>Calculateur de surface</h3><label for="longueur">Longueur du jardin (m)</label><input id="longueur" inputmode="decimal" placeholder="Ex. 4,5">
+<label for="largeur">Largeur du jardin (m)</label><input id="largeur" inputmode="decimal" placeholder="Ex. 2">
+<button class="cta" style="margin-top:14px;width:100%" onclick="calc()">Calculer ma surface</button>
+<div class="result" id="result" aria-live="polite">Entrez deux mesures pour obtenir la surface disponible.</div>
+</div></div></section>
+<section class="feature"><div class="wrap"><h2>Jardin autonome</h2><p class="lead">Notre première collection privilégiera des semences adaptées à une autonomie durable.</p><div class="tags"><span class="tag">Pollinisation libre</span><span class="tag">Semences patrimoniales</span><span class="tag">Non traitées</span><span class="tag">Ressemables</span></div><p style="margin-top:20px">Première fiche à venir : <strong>la laitue</strong> — quantité à planter, espacement, récolte et récupération des graines.</p></div></section>
+</main>
+<footer><div class="wrap">Héritage Vivant · Prototype mobile-first · Québec</div></footer>
+<nav class="bottom" aria-label="Navigation"><a href="#"><b>⌂</b>Accueil</a><a href="#outils"><b>▦</b>Calculer</a><a href="#outils"><b>🌱</b>Jardin</a><a href="#outils"><b>⌕</b>Explorer</a></nav>
+<script>
+function n(id){return parseFloat(document.getElementById(id).value.replace(',','.'))}
+function calc(){const l=n('longueur'),w=n('largeur'),r=document.getElementById('result');if(!(l>0&&w>0)){r.textContent='Entrez une longueur et une largeur supérieures à zéro.';return}r.innerHTML='<strong>'+((l*w).toLocaleString('fr-CA',{maximumFractionDigits:2}))+' m²</strong> de surface disponible. Cette mesure servira ensuite à calculer les quantités de semences.'}
+</script></body></html>
